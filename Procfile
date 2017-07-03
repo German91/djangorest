@@ -1,1 +1,1 @@
-web: gunicorn src/djangorest.wsgi
+web: gunicorn djangorest.wsgi --log-file -
