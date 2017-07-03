@@ -119,7 +119,7 @@ DATABASES['default']['CONN_MAX_AGE'] = 500
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-ALLOWED_HOSTS = ['localhost', 'djangorestapi-nito.herokuapp']
+ALLOWED_HOSTS = ['localhost', 'djangorestapi-nito.herokuapp.com']
 
 DEBUG = False
 
