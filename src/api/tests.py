@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -9,9 +10,11 @@ from .models import Bucketlist
 # Bucketlist Tests
 class ModelTestCase(TestCase):
     def setUp(self):
+        # Create new user
+        user = User.object.create(username='nerd')
         # Initialize a new bucketlist object passing a name
         self.bucketlist_name = 'Write world class code'
-        self.bucketlist = Bucketlist(name=self.bucketlist_name)
+        self.bucketlist = Bucketlist(name=self.bucketlist_name, owner=user)
 
 
     def test_can_create_a_bucketlist(self):
@@ -28,8 +31,13 @@ class ModelTestCase(TestCase):
 
 class ViewTestCase(TestCase):
     def setUp(self):
+        # Create new user
+        user = User.object.create(username='nerd')
+
         self.client = APIClient
-        self.bucketlist_data = {'name': 'Go to Ibiza'}
+        self.client.force_authenticate(user=user)
+
+        self.bucketlist_data = {'name': 'Go to Ibiza', 'owner': user.id}
         self.response = self.client.post(reverse('create'), self.bucketlist_data, format='json')
 
 
@@ -39,7 +47,7 @@ class ViewTestCase(TestCase):
 
     def test_api_can_get_a_bucketlist(self):
         # Send an id and try to get that bucketlist by id
-        bucketlist = Bucketlist.objects.get()
+        bucketlist = Bucketlist.objects.get(id=1)
         response = self.client.get(
             reverse('detials', kwargs={'pk': bucketlist.id}),
             format='json'
@@ -50,6 +58,7 @@ class ViewTestCase(TestCase):
 
 
     def test_api_can_update_a_bucketlist(self):
+        bucketlist = Bucketlist.objects.get()
         change_bucketlist = {'name': 'Something new'}
         response = self.client.put(
             reverse('details', kwargs={'pk': bucketlist.id}),
